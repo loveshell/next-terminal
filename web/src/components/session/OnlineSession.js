@@ -451,7 +451,7 @@ class OnlineSession extends Component {
                             <Modal
                                 className='modal-no-padding'
                                 title={this.state.sessionTitle}
-                                centered={true}
+
                                 maskClosable={false}
                                 visible={this.state.accessVisible}
                                 footer={null}
