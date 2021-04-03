@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import './Monitor.css';
 import ReactEcharts from 'echarts-for-react'
+import Layout from "antd/lib/layout/layout";
+import {Col, Descriptions, Row, Table} from "antd"
 
+const {Content} = Layout
 
 // Demo
 class StatusMonitor extends Component {
@@ -15,7 +18,7 @@ class StatusMonitor extends Component {
     }
 
     render() {
-        const option = {
+        const baseOption = {
             title: {
                 text: 'CPU使用率'
             },
@@ -43,7 +46,7 @@ class StatusMonitor extends Component {
             },
             yAxis: {
                 type: 'value',
-                max:100
+                max: 100
             },
             series: [
                 {
@@ -67,18 +70,213 @@ class StatusMonitor extends Component {
 
             ]
         };
+        const memoryOption = {
+            title: {
+                text: '内存使用分布',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+            },
+            series: [
+                {
+                    name: '内存分布',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                        {value: 1048, name: '用户'},
+                        {value: 735, name: '系统'},
+                        {value: 580, name: '空闲'},
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 1)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        const netWorkOption = {
+            title: {
+                text: '网络流量',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+            },
+            series: [
+                {
+                    name: '内存分布',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                        {value: 1048, name: '发送', itemStyle: {"color": "#087cd2"}},
+                        {value: 735, name: '接收', itemStyle: {"color": "#7ce0a0"}},
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 1)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        const containerColumns = [
+            {
+                title: '容器ID',
+                dataIndex: 'container_id',
+                key: 'container_id',
+            },
+            {
+                title: '容器名称',
+                dataIndex: 'container_name',
+                key: 'container_name',
+            },
+            {
+                title: 'CPU',
+                dataIndex: 'cpu_pre',
+                key: 'cpu_pre',
+            },
+            {
+                title: '内存情况',
+                dataIndex: 'mem_usage_limit',
+                key: 'mem_usage_limit',
+            }
+        ];
+        const containerData = [
+            {
+                "container_id": "3d651ab404cb",
+                "container_name": "next-terminal",
+                "cpu_pre": "0.10%",
+                "mem_usage_limit": "95.74 MiB / 7.638 GiB"
+            }, {
+                "container_id": "177e2e15be02",
+                "container_name": "k8s_kube-scheduler_kube-scheduler-k8s-master_kube-system_1550c620c1fcf6b52e24352a2f6d899e_9",
+                "cpu_pre": "0.26%",
+                "mem_usage_limit": "14.89 MiB / 7.638 GiB"
+            }, {
+                "container_id": "70980e93908f",
+                "container_name": "k8s_etcd_etcd-k8s-master_kube-system_d40f2c29b74a0cb2ecde9864ba0284d4_8",
+                "cpu_pre": "1.12%",
+                "mem_usage_limit": "56.11 MiB / 7.638 GiB"
+            }, {
+                "container_id": "bebeeffa0de2",
+                "container_name": "k8s_kube-controller-manager_kube-controller-manager-k8s-master_kube-system_06f86d57119ab927854bae68a140a585_8",
+                "cpu_pre": "0.75%",
+                "mem_usage_limit": "40.05 MiB / 7.638 GiB"
+            }, {
+                "container_id": "26b32088e815",
+                "container_name": "k8s_kube-apiserver_kube-apiserver-k8s-master_kube-system_c6fd5c60cfb20bd2a706d63360289fa3_8",
+                "cpu_pre": "2.34%",
+                "mem_usage_limit": "278.9 MiB / 7.638 GiB"
+            }, {
+                "container_id": "754b350e370c",
+                "container_name": "k8s_kube-proxy_kube-proxy-tq52n_kube-system_f16571eb-741b-43cf-ac5f-0ca4a4b8f75e_7",
+                "cpu_pre": "0.03%",
+                "mem_usage_limit": "12.74 MiB / 7.638 GiB"
+            }, {
+                "container_id": "8159d31df5a0",
+                "container_name": "k8s_POD_kube-apiserver-k8s-master_kube-system_c6fd5c60cfb20bd2a706d63360289fa3_9",
+                "cpu_pre": "0.00%",
+                "mem_usage_limit": "44 KiB / 7.638 GiB"
+            }, {
+                "container_id": "09f558fe1fa2",
+                "container_name": "k8s_POD_etcd-k8s-master_kube-system_d40f2c29b74a0cb2ecde9864ba0284d4_9",
+                "cpu_pre": "0.00%",
+                "mem_usage_limit": "36 KiB / 7.638 GiB"
+            }, {
+                "container_id": "bb89e0ddbfb8",
+                "container_name": "k8s_POD_kube-controller-manager-k8s-master_kube-system_06f86d57119ab927854bae68a140a585_10",
+                "cpu_pre": "0.00%",
+                "mem_usage_limit": "40 KiB / 7.638 GiB"
+            }, {
+                "container_id": "4f4a33e5322e",
+                "container_name": "k8s_POD_kube-proxy-tq52n_kube-system_f16571eb-741b-43cf-ac5f-0ca4a4b8f75e_7",
+                "cpu_pre": "0.00%",
+                "mem_usage_limit": "40 KiB / 7.638 GiB"
+            }, {
+                "container_id": "2344287de2c9",
+                "container_name": "k8s_POD_kube-scheduler-k8s-master_kube-system_1550c620c1fcf6b52e24352a2f6d899e_9",
+                "cpu_pre": "0.00%",
+                "mem_usage_limit": "40 KiB / 7.638 GiB"
+            }, {
+                "container_id": "e6e10aa53add",
+                "container_name": "github-runner",
+                "cpu_pre": "0.00%",
+                "mem_usage_limit": "14.3 MiB / 7.638 GiB"
+            }, {
+                "container_id": "723e477c7385",
+                "container_name": "teaser_codimd_1",
+                "cpu_pre": "0.02%",
+                "mem_usage_limit": "80.58 MiB / 7.638 GiB"
+            }, {
+                "container_id": "d27b78c5ff4b",
+                "container_name": "teaser_database_1",
+                "cpu_pre": "0.00%",
+                "mem_usage_limit": "2.734 MiB / 7.638 GiB"
+            }]
+
         return (
             <>
-                <div>
-                    基本信息
-                </div>
-                <div className="Status">
-                    <ReactEcharts
-                        style={{height: 300, width: 1200}}
-                        notMerge={true}
-                        lazyUpdate={true}
-                        option={option}/>
-                </div>
+                <Content>
+                    <Row gutter={5} justify="start" style={{padding: 18}}>
+                        <Col>
+                            <Descriptions title="系统信息">
+                                <Descriptions.Item label="发型版本">Centos 7</Descriptions.Item>
+                                <Descriptions.Item label="开机时长">89天</Descriptions.Item>
+                            </Descriptions>
+                        </Col>
+
+                    </Row>
+                    <Row justify="left" gutter={18} style={{padding: 18}}>
+
+                        <Col span={12}>
+                            <ReactEcharts
+                                style={{height: 300, width: 500, padding: 10}}
+                                notMerge={true}
+                                lazyUpdate={true}
+                                option={memoryOption}/>
+
+                        </Col>
+                        <Col span={12}>
+                            <ReactEcharts
+                                style={{height: 300, width: 500, padding: 10}}
+                                notMerge={true}
+                                lazyUpdate={true}
+                                option={netWorkOption}/>
+
+                        </Col>
+                    </Row>
+                    <Row justify="center" style={{paddingTop: 10}}>
+                        <Col span={20}>
+                            <div className="Status">
+                                <ReactEcharts
+                                    style={{height: 300, width: 1000, padding: 10}}
+                                    notMerge={true}
+                                    lazyUpdate={true}
+                                    option={baseOption}/>
+                            </div>
+                        </Col>
+
+                    </Row>
+
+                    <Table columns={containerColumns} dataSource={containerData} style={{padding:18}}/>
+                </Content>
+
             </>
         );
     }
