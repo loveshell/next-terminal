@@ -30,7 +30,6 @@ class StatusMonitor extends Component {
 
     }
 
-
     componentDidMount() {
         let param = {
             'X-Auth-Token': getToken()
