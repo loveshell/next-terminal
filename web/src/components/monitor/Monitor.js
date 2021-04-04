@@ -3,6 +3,12 @@ import './Monitor.css';
 import ReactEcharts from 'echarts-for-react'
 import Layout from "antd/lib/layout/layout";
 import {Col, Descriptions, Row, Table} from "antd"
+import {wsServer} from "../../common/env";
+import {getToken} from "../../utils/utils";
+import {message} from "antd/es";
+
+import qs from "qs";
+
 
 const {Content} = Layout
 
@@ -10,15 +16,79 @@ const {Content} = Layout
 class StatusMonitor extends Component {
 
     state = {
-        option: {}
+        webSocket: undefined,
+        baseInfo: {},
+        memoryInfo: [{}],
+        dockerInfo: {},
+        netWorkInfo: {}
+
     }
 
-    componentWillMount() {
+    constructor(props) {
+        super(props)
+        this.state.id = props.match.params.id
 
     }
+
+
+    componentDidMount() {
+        let param = {
+            'X-Auth-Token': getToken()
+        }
+        console.log(wsServer + '/monitor/' + this.state.id + "?" + qs.stringify(param))
+        let webSocket = new WebSocket(wsServer + '/monitor/' + this.state.id + "?" + qs.stringify(param));
+        this.setState({
+            webSocket: webSocket
+        })
+        let pingInterval;
+        webSocket.onopen = (e => {
+            pingInterval = setInterval(() => {
+                webSocket.send("status")
+            }, 5000);
+        });
+
+        webSocket.onerror = (e) => {
+            message.error("Failed to connect to server.");
+        }
+        webSocket.onclose = (e) => {
+            if (pingInterval) {
+                clearInterval(pingInterval);
+            }
+        }
+        webSocket.onmessage = (e) => {
+            let data = JSON.parse(e.data)
+            console.log(data)
+            let CpuInfo = []
+            if (this.state.memoryInfo.length < 10) {
+                CpuInfo=this.state.memoryInfo
+                CpuInfo.push(data["base_info"])
+            }
+            CpuInfo.forEach(
+
+            )
+            this.setState({
+                baseInfo: data["base_info"],
+                memoryInfo: CpuInfo,
+                dockerInfo: data["docker"],
+                netWorkInfo: data['net_work'],
+                upTime: data['base_info']['uptime'],
+                onlineUser: data['base_info']["online_user"]
+            })
+            console.log(this.state)
+        }
+    }
+
+
+    componentWillUnmount() {
+        let webSocket = this.state.webSocket;
+        if (webSocket) {
+            webSocket.close()
+        }
+    }
+
 
     render() {
-        const baseOption = {
+        let baseOption = {
             title: {
                 text: 'CPU使用率'
             },
@@ -236,8 +306,9 @@ class StatusMonitor extends Component {
                     <Row gutter={5} justify="start" style={{padding: 18}}>
                         <Col>
                             <Descriptions title="系统信息">
-                                <Descriptions.Item label="发型版本">Centos 7</Descriptions.Item>
-                                <Descriptions.Item label="开机时长">89天</Descriptions.Item>
+                                <Descriptions.Item label="开机时长">{this.state.upTime}</Descriptions.Item>
+                                <Descriptions.Item label="在线用户">{this.state.onlineUser}</Descriptions.Item>
+
                             </Descriptions>
                         </Col>
 
@@ -274,7 +345,10 @@ class StatusMonitor extends Component {
 
                     </Row>
 
-                    <Table columns={containerColumns} dataSource={containerData} style={{padding:18}}/>
+                    <Table columns={containerColumns}
+                           dataSource={containerData}
+                           pagination={false}
+                           style={{padding: 18}}/>
                 </Content>
 
             </>

@@ -26,6 +26,7 @@ const (
 	TopCMD = "top -n 1 -b -s"
 
 	NetWorkCMD = "/sbin/ifconfig eth0 |grep bytes; sleep 1s; /sbin/ifconfig eth0 | grep bytes"
+	//GetCpuCore = `cat /proc/cpuinfo| grep \"cpu cores\"| uniq \n`
 )
 
 var statisticsError = errors.New("Get base monitor error")
@@ -34,6 +35,7 @@ type MonitorInfo struct {
 	BaseInfo BaseInfo     `json:"base_info"`
 	Docker   []DockerInfo `json:"docker"`
 	NetWork  NewWork      `json:"net_work"`
+	Datetime time.Time    `json:"datetime"`
 }
 
 type NewWork struct {
@@ -234,6 +236,8 @@ func getBaseInfo(client *ssh.Client) (ret BaseInfo, err error) {
 					ret.Steal = cInt
 				}
 			}
+			ret.TotalUse = ret.SysUse + ret.UserUse
+
 		}
 		if i == 3 {
 			memUseArray := memUsReg.FindStringSubmatch(line)
@@ -297,6 +301,7 @@ func MonitorEndpoint(c echo.Context) (err error) {
 			if err != nil {
 				break
 			}
+			returnData.Datetime = time.Now()
 			if msgt != websocket.TextMessage {
 				break
 			}
