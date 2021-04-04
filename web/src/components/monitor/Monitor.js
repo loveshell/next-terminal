@@ -63,9 +63,6 @@ class StatusMonitor extends Component {
                 CpuInfo=this.state.memoryInfo
                 CpuInfo.push(data["base_info"])
             }
-            CpuInfo.forEach(
-
-            )
             this.setState({
                 baseInfo: data["base_info"],
                 memoryInfo: CpuInfo,
