@@ -8,7 +8,7 @@
     "axios": "^0.21.1",
     "dayjs": "^1.10.4",
     "guacamole-common-js": "^1.2.0",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "react": "^16.14.0",
     "react-contexify": "^4.1.1",
     "react-dom": "^16.14.0",
